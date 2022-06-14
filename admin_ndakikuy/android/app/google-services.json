@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "754765694024",
+    "project_id": "ndakikuy-899cc",
+    "storage_bucket": "ndakikuy-899cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754765694024:android:f295d14885559e13ea447d",
+        "android_client_info": {
+          "package_name": "com.sanding.ndakikuy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754765694024-uc8s0lht0i7a73ibcdk5c2jicpaa8mal.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrkEwU76yZquBJbKLY6LJj2_37XRRlRAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754765694024-uc8s0lht0i7a73ibcdk5c2jicpaa8mal.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754765694024:android:87c8d3bcd1a700a4ea447d",
+        "android_client_info": {
+          "package_name": "com.tubes.admin_ndakikuy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "754765694024-uc8s0lht0i7a73ibcdk5c2jicpaa8mal.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrkEwU76yZquBJbKLY6LJj2_37XRRlRAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "754765694024-uc8s0lht0i7a73ibcdk5c2jicpaa8mal.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
