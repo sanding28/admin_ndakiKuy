@@ -1,10 +1,36 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:admin_ndakikuy/services/basecamp_service.dart';
 import 'package:admin_ndakikuy/shared/theme.dart';
+import 'package:admin_ndakikuy/ui/widget/custom_basecamp.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
+import '../../cubit/basecamp_cubit.dart';
+import '../../models/basecamp_model.dart';
+
+class HomePage extends StatefulWidget {
   const HomePage({ Key? key }) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _basecampName = TextEditingController();
+  final TextEditingController _basecampDes = TextEditingController();
+  final TextEditingController _basecampCity = TextEditingController();
+
+  @override
+  void initState() {
+     context.read<BasecampCubit>().fetchBasecamp();
+    super.initState();
+  }
+
+  updateData(BasecampModel basecamp) async{
+    await BasecampService().updateBasecamp(basecamp);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,116 +53,107 @@ class HomePage extends StatelessWidget {
       );
     }
 
-    Widget basecampCard(){
+    Widget basecampCard(List<BasecampModel> basecamp){
       return Container(
-        height: 270,
-        width: double.infinity,
-        margin: EdgeInsets.only(left: 24, right: 24, top: 15),
-        decoration: BoxDecoration(
-          color: keybackgroundColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
+        margin:EdgeInsets.symmetric(horizontal: 24,vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 30, left: 23),
-              height: 140,
-              width: 300,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(image: AssetImage('assets/semeru.png'), fit: BoxFit.cover),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 20, left: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Gunung Semeru',
-                    style: blackTextStyle.copyWith(
-                      fontSize: 18,
-                      fontWeight: bold,
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Text(
-                    'Lumajang Jawa Timur',
-                    style: blackTextStyle.copyWith(
-                      fontSize: 15,
-                      fontWeight: reguler,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          children: basecamp.map((BasecampModel basecamp) {
+            return CustomBasecamp(basecamp);
+          }).toList(),
+        )
       );
     }
 
-    Widget buttonButton(){
-      return Container(
-        margin: EdgeInsets.only(top: 40, left: 24, right: 24),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              onPressed: (){}, 
-              child: Container(
-                height: 30,
-                width: 120,
-                decoration: BoxDecoration(
-                  color: keyRadialColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    'Detail',
-                    style: whiteTextStyle,
-                  ),
-                ),
-              )
-            ),
-            TextButton(
-              onPressed: (){}, 
-              child: Container(
-                height: 30,
-                width: 120,
-                decoration: BoxDecoration(
-                  color: keyOrangeColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    'Edit',
-                    style: whiteTextStyle,
-                  ),
-                ),
-              )
+    return BlocConsumer<BasecampCubit, BasecampState>(
+      listener: (context, state) {
+        if(state is BasecampFailed){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: keyOrangeColor,
+              content: Text(state.error),
             )
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: ListView(
-        children: [
-          topBanner(),
-          basecampCard(),
-          buttonButton(),
-        ],
-      )
+          );
+        }
+      },
+      builder: (context, state) {
+        if(state is BasecampSuccess){
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Basecamp'),
+              actions: [
+                ElevatedButton(
+                  onPressed: (){
+                    openDialogBox(context);
+                  }, 
+                  child: Icon(Icons.add),
+                )
+              ],
+            ),
+            body: ListView(
+              children: [
+                topBanner(),
+                basecampCard(state.basecamp),
+              ],
+            )
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
+
+  openDialogBox(BuildContext context){
+    return showDialog(
+      context: context, 
+      builder: (context){
+        return AlertDialog(
+          title: Text('Ubah Data Basecamp'),
+          content: Container(
+            height: 250,
+            child: Column(
+              children: [
+                TextField(
+                  controller: _basecampName,
+                  decoration: InputDecoration(hintText: 'Nama Basecamp'),
+                ),
+                TextField(
+                  controller: _basecampCity,
+                  decoration: InputDecoration(hintText: 'Kota Basecamp'),
+                ),
+                TextField(
+                  controller: _basecampDes,
+                  decoration: InputDecoration(hintText: 'deskripsi Basecamp'),
+                )
+              ],
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: (){
+                final docUser = FirebaseFirestore.instance.collection('basecamp');
+                docUser.add({
+                  'name': _basecampName.text,
+                  'city': _basecampCity.text,
+                  'about': _basecampDes.text,
+                });
+                Navigator.pop(context);
+              }, 
+              child: Text('Submit')
+            )
+          ],
+        );
+      }
+    );
+  }
+
+  submitActions(BuildContext context){
+    updateData(BasecampModel(
+      name: _basecampName.text,
+      city: _basecampCity.text,
+      about: _basecampDes.text, id: '',
+    ));
+  }
+
 }

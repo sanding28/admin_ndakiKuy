@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:admin_ndakikuy/cubit/auth_cubit.dart';
+import 'package:admin_ndakikuy/cubit/basecamp_cubit.dart';
 import 'package:admin_ndakikuy/ui/pages/login_page.dart';
 import 'package:admin_ndakikuy/ui/pages/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AuthCubit(),
         ),
+        BlocProvider(create:(context) => BasecampCubit())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
